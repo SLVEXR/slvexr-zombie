@@ -652,19 +652,79 @@
       </div>
     </section>
 
-    <footer>
-      <div>© <span id="year"></span> SLVEXR | Музикальні Зомбі | UA</div>
-      <div class="footer-links">
-        <a href="#about">Про сервер</a>
-        <a href="#privileges">Привілеї</a>
-        <a href="https://t.me/slvexrzombie" target="_blank">Telegram</a>
-      </div>
-    </footer>
+   <footer>
+  <div>© <span id="year"></span> SLVEXR | Музикальні Зомбі | UA</div>
+  <div class="footer-links">
+    <a href="#about">Про сервер</a>
+    <a href="#privileges">Привілеї</a>
+    <a href="https://t.me/slvexrzombie" target="_blank">Telegram</a>
   </div>
+</footer>
+</div>
 
-  <script>
-    // Поточний рік у футері
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+<script>
+  // Поточний рік у футері
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ===== Живий онлайн через CSHost API =====
+
+  // ⚠️ СЮДИ ВСТАВ СВІЙ РЕАЛЬНИЙ ТОКЕН З CSHOST
+  // Токен краще потім НЕ світити в публічному репозиторії.
+  const API_URL = "https://cshost.com.ua/api?action=getServerStatus&serverid=36689&token=ТВІЙ_ТОКЕН";
+
+  async function updateServerStatus() {
+    const statusText = document.getElementById("server-status-text");
+    const playersSpan = document.getElementById("server-players");
+    const maxSpan = document.getElementById("server-maxplayers");
+    const pill = document.getElementById("server-pill");
+
+    if (!statusText || !playersSpan || !maxSpan || !pill) return;
+
+    try {
+      statusText.textContent = "CHECK...";
+
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+
+      const data = await res.json();
+      console.log("CSHost API:", data);
+
+      // Підбираємо поля з різними можливими назвами
+      const players = data.players ?? data.online ?? 0;
+      const maxplayers = data.maxplayers ?? data.slots ?? 32;
+      const statusRaw = (data.status ?? data.state ?? "").toString().toLowerCase();
+
+      playersSpan.textContent = players;
+      maxSpan.textContent = maxplayers;
+
+      // Визначаємо online / offline
+      const isOnline =
+        statusRaw === "online" ||
+        statusRaw === "on" ||
+        statusRaw === "1" ||
+        statusRaw === "true";
+
+      if (isOnline) {
+        statusText.textContent = "ONLINE";
+        pill.style.background = "rgba(0, 200, 120, 0.16)";
+        pill.style.borderColor = "rgba(0, 200, 120, 0.7)";
+        pill.style.color = "#9fffd3";
+      } else {
+        statusText.textContent = "OFFLINE";
+        pill.style.background = "rgba(80, 0, 20, 0.4)";
+        pill.style.borderColor = "rgba(255, 23, 68, 0.7)";
+        pill.style.color = "#ffb3c0";
+      }
+    } catch (err) {
+      console.error("Помилка CSHost API:", err);
+      statusText.textContent = "UNKNOWN";
+    }
+  }
+
+  // Перший запит одразу
+  updateServerStatus();
+  // Далі оновлюємо кожні 30 секунд
+  setInterval(updateServerStatus, 30000);
+</script>
 </body>
 </html>
