@@ -2,723 +2,86 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>SLVEXR | Музикальні Зомбі | UA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SLVEXR | Музикальні Зомбі | UA — унікальний ZM сервер CS 1.6 з музикою, левелами, репутацією та жорсткими привілеями." />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Russo+One&display=swap" rel="stylesheet" />
-
+  <title>Тест CSHOST API</title>
   <style>
-    :root {
-      --bg-main: #05030a;
-      --bg-secondary: #0b0715;
-      --accent-purple: #7b2cff;
-      --accent-red: #ff1744;
-      --accent-soft-red: #ff4b5c;
-      --text-main: #f5f5f5;
-      --text-muted: #b0a8c0;
-      --border-glow-purple: 0 0 18px rgba(123, 44, 255, 0.7);
-      --border-glow-red: 0 0 18px rgba(255, 23, 68, 0.7);
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --transition-fast: 0.2s ease-out;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: "Roboto", system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at top, #1b0b33 0, #05030a 45%, #020008 100%);
-      color: var(--text-main);
-      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #05030a;
+      color: #f5f5f5;
+      padding: 20px;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* ---------- Layout ---------- */
-
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 16px 32px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 10px 4px 18px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .logo {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .logo-title {
-      font-family: "Russo One", system-ui, sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: linear-gradient(120deg, var(--accent-purple), var(--accent-red));
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .logo-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    nav {
-      display: flex;
-      gap: 10px;
-      font-size: 0.8rem;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    nav a {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      color: var(--text-muted);
-      transition: background var(--transition-fast), color var(--transition-fast), border var(--transition-fast);
-    }
-
-    nav a:hover {
-      background: rgba(123, 44, 255, 0.18);
-      border-color: rgba(123, 44, 255, 0.5);
-      color: #fff;
-    }
-
-    /* ---------- Hero ---------- */
-
-    .hero {
-      margin-top: 22px;
-      padding: 24px 18px;
-      border-radius: var(--radius-lg);
-      background:
-        radial-gradient(circle at top left, rgba(123, 44, 255, 0.25), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(255, 23, 68, 0.3), transparent 55%),
-        linear-gradient(135deg, rgba(10, 5, 25, 0.97), rgba(8, 1, 18, 0.98));
-      box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.02),
-        0 24px 60px rgba(0, 0, 0, 0.9);
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
-      gap: 20px;
-      align-items: center;
-    }
-
-    .hero-main h1 {
-      font-family: "Russo One", system-ui, sans-serif;
-      font-size: 1.9rem;
-      line-height: 1.2;
-      text-transform: uppercase;
-    }
-
-    .hero-main h1 span.purple {
-      color: var(--accent-purple);
-    }
-
-    .hero-main h1 span.red {
-      color: var(--accent-soft-red);
-    }
-
-    .hero-tagline {
-      margin-top: 10px;
-      font-size: 0.92rem;
-      color: var(--text-muted);
-    }
-
-    .hero-badges {
-      margin-top: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(2, 0, 10, 0.85);
-      backdrop-filter: blur(8px);
-    }
-
-    .badge-purple {
-      border-color: rgba(123, 44, 255, 0.7);
-      box-shadow: var(--border-glow-purple);
-    }
-
-    .badge-red {
-      border-color: rgba(255, 23, 68, 0.7);
-      box-shadow: var(--border-glow-red);
-    }
-
-    .hero-actions {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .btn {
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-size: 0.9rem;
+    button {
+      padding: 8px 14px;
+      border-radius: 6px;
       border: none;
       cursor: pointer;
       font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+      margin-bottom: 12px;
     }
-
-    .btn-primary {
-      background: radial-gradient(circle at top left, #ff4b8e, #ff1744);
-      color: #fff;
-      box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 16px 40px rgba(255, 23, 68, 0.5);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px) scale(1.02);
-      box-shadow:
-        0 0 0 1px rgba(255, 200, 220, 0.35),
-        0 20px 50px rgba(255, 23, 68, 0.7);
-    }
-
-    .btn-ghost {
-      background: rgba(13, 5, 30, 0.9);
-      color: var(--text-muted);
-      border: 1px solid rgba(123, 44, 255, 0.5);
-      box-shadow:
-        0 0 0 1px rgba(16, 0, 40, 0.5),
-        0 16px 40px rgba(0, 0, 0, 0.9);
-    }
-
-    .btn-ghost:hover {
-      background: radial-gradient(circle at top, rgba(123, 44, 255, 0.45), rgba(7, 1, 18, 0.98));
-      color: #fff;
-    }
-
-    .hero-side {
-      border-radius: var(--radius-md);
-      background: linear-gradient(145deg, rgba(30, 0, 60, 0.85), rgba(12, 0, 20, 0.9));
-      padding: 14px 14px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow:
-        var(--border-glow-purple),
-        0 20px 40px rgba(0, 0, 0, 0.9);
-      font-size: 0.8rem;
-    }
-
-    .hero-side-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .hero-online {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(5, 1, 15, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      margin-bottom: 10px;
-    }
-
-    .online-main {
+    #result {
+      white-space: pre-wrap;
+      background: #0b0715;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
       font-size: 0.9rem;
-    }
-
-    .online-pill {
-      font-size: 0.78rem;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(0, 200, 120, 0.16);
-      border: 1px solid rgba(0, 200, 120, 0.7);
-      color: #9fffd3;
-      text-align: center;
-      min-width: 90px;
-    }
-
-    .hero-side-list {
-      margin-top: 6px;
-      list-style: none;
-      display: grid;
-      gap: 4px;
-    }
-
-    .hero-side-list li {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-    }
-
-    .dot-purple,
-    .dot-red {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .dot-purple {
-      background: var(--accent-purple);
-      box-shadow: 0 0 8px rgba(123, 44, 255, 0.9);
-    }
-
-    .dot-red {
-      background: var(--accent-red);
-      box-shadow: 0 0 8px rgba(255, 23, 68, 0.9);
-    }
-
-    /* ---------- Sections ---------- */
-
-    section {
-      margin-top: 30px;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-      font-family: "Russo One", system-ui, sans-serif;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .section-title span {
-      color: var(--accent-purple);
-    }
-
-    .section-text {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      max-width: 720px;
-    }
-
-    .cards {
-      margin-top: 16px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .card {
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, rgba(10, 4, 20, 0.96), rgba(7, 1, 14, 0.96));
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 12px 14px;
-      font-size: 0.86rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      opacity: 0;
-      background: radial-gradient(circle at top left, rgba(123, 44, 255, 0.25), transparent 55%);
-      transition: opacity var(--transition-fast);
-      pointer-events: none;
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
-    .card-title {
-      font-weight: 600;
-      font-size: 0.94rem;
-    }
-
-    .chip {
-      font-size: 0.7rem;
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text-muted);
-    }
-
-    .chip-legendary {
-      border-color: var(--accent-red);
-      color: var(--accent-soft-red);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 600;
-    }
-
-    .card-body {
-      color: var(--text-muted);
-    }
-
-    .card-body strong {
-      color: var(--accent-soft-red);
-      font-weight: 600;
-    }
-
-    /* ---------- Footer ---------- */
-
-    footer {
-      margin-top: 34px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      text-decoration: underline;
-      text-decoration-style: dotted;
-      text-underline-offset: 3px;
-    }
-
-    /* ---------- Responsive ---------- */
-
-    @media (max-width: 780px) {
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .hero-side {
-        order: -1;
-      }
-    }
-
-    @media (max-width: 520px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      nav {
-        justify-content: flex-start;
-      }
-      .hero-main h1 {
-        font-size: 1.6rem;
-      }
-      .page {
-        padding-inline: 12px;
-      }
+      max-height: 70vh;
+      overflow: auto;
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="logo">
-        <div class="logo-title">SLVEXR | Музикальні Зомбі | UA</div>
-        <div class="logo-sub">оригінальний ZM сервер CS 1.6 з музикою, рівнями та репутацією</div>
-      </div>
-      <nav>
-        <a href="#about">Про сервер</a>
-        <a href="#modes">Режими</a>
-        <a href="#privileges">Привілеї</a>
-        <a href="#contacts">Контакти</a>
-      </nav>
-    </header>
+  <h1>Тест CSHOST API</h1>
+  <p>Натисни кнопку, щоб зробити запит до API і подивитися, що реально прилітає.</p>
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-main">
-        <h1>
-          <span class="purple">Музика, зомбі</span> &amp;
-          <span class="red">кровавий фан</span>
-        </h1>
-        <p class="hero-tagline">
-          Унікальний український зомбі-сервер CS 1.6 з атмосферною музикою, кастомним модом, рівнями,
-          валютою <strong>“біти”</strong> та системою репутації. Ти або виживеш… або станеш частиною орди.
-        </p>
+  <button id="btn-direct">Тест: прямий запит (може дати CORS)</button>
+  <button id="btn-proxy">Тест: через проксі allorigins</button>
 
-        <div class="hero-badges">
-          <div class="badge badge-purple">🎧 Музикальні івенти</div>
-          <div class="badge badge-red">🧟 Унікальні ножі та здібності</div>
-          <div class="badge">⭐ Рівні, валюта, репутація</div>
-          <div class="badge">🇺🇦 UA комʼюніті</div>
-        </div>
-
-        <div class="hero-actions">
-          <!-- Підключення до сервера через Steam -->
-          <a class="btn btn-primary" href="steam://connect/91.211.118.49:27019">
-            Підключитись до сервера
-          </a>
-
-          <a class="btn btn-ghost" href="https://t.me/slvexrzombie" target="_blank">
-            Наш Telegram канал
-          </a>
-        </div>
-      </div>
-
-      <aside class="hero-side">
-        <div class="hero-side-title">Статус сервера</div>
-        <div class="hero-online">
-          <div class="online-main">
-            SLVEXR | Музикальні Зомбі<br />
-            <span style="font-size: 0.76rem; color: var(--text-muted);">CS 1.6 • Zombie Mod</span>
-          </div>
-          <div class="online-pill" id="server-pill">
-            <span id="server-status-text">ONLINE</span><br />
-            <span id="server-players" style="font-size: 0.7rem;">? / 32 гравців</span>
-          </div>
-        </div>
-        <ul class="hero-side-list">
-          <li><span class="dot-purple"></span> Кастомні моделі виживших та зомбі</li>
-          <li><span class="dot-red"></span> Жорсткі боси та режими под Nemesis / Survivor</li>
-          <li><span class="dot-purple"></span> Збереження рівня, статистики та “бітів” через SQL</li>
-          <li><span class="dot-red"></span> Події, івенти та оновлення від SLVEXR</li>
-        </ul>
-      </aside>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about">
-      <h2 class="section-title"><span>Про</span> сервер</h2>
-      <p class="section-text">
-        <strong>SLVEXR | Музикальні Зомбі | UA</strong> — це не чергова збірка з інтернету.
-        Це живий проект з кастомним кодом, власними ефектами, музикою, HUDʼами, ножами, рівнями,
-        валютою та репутацією. Ми поступово перетворюємо звичайний ZM у щось середнє
-        між хорор-аркадою та музичним шоу.
-      </p>
-    </section>
-
-    <!-- MODES -->
-    <section id="modes">
-      <h2 class="section-title"><span>Режими</span> та фішки</h2>
-      <div class="cards">
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">🧟 Класичний ZM з прокачкою</div>
-          </div>
-          <div class="card-body">
-            Почни з нуля, качай рівень, збирай “біти”, піднімай репутацію. Чим довше ти виживаєш
-            або кусаєш людей — тим жорсткіше стаєш.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">⚔ Легендарні ножі</div>
-          </div>
-          <div class="card-body">
-            Від “Меча Одіна” до “Кривавого молота” — у кожного ножа свій ефект, анімація
-            та стиль. Частина ножів доступна за рівень, інші — за привілеї.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">🎧 Музичні події</div>
-          </div>
-          <div class="card-body">
-            Авторські біти, фанкові ремікси та темні музичні інтро на раунд.
-            Це сервер, де звук важить не менше, ніж aim.
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- PRIVILEGES -->
-    <section id="privileges">
-      <h2 class="section-title"><span>Привілеї</span> на сервері</h2>
-      <p class="section-text">
-        Привілеї не ламають баланс, а підсилюють стиль. Кожен статус дає свій сет бонусів:
-        додаткові HP / Armor, доступ до унікальної зброї, ножів, меню та візуальних ефектів.
-      </p>
-
-      <div class="cards" style="margin-top: 18px;">
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">VIP</div>
-            <span class="chip">Вступний рівень</span>
-          </div>
-          <div class="card-body">
-            Базовий буст для тих, хто хоче виділятися серед виживших і мати комфортний старт у кожному раунді.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">GRAND</div>
-            <span class="chip">Стабільний домінатор</span>
-          </div>
-          <div class="card-body">
-            Покращені бонуси, доступ до частини унікальної зброї та додаткових опцій у меню.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">GAMBIT</div>
-            <span class="chip">Рівень 30+</span>
-          </div>
-          <div class="card-body">
-            Для тих, хто вже прожив не один зомбі-апокаліпсис. Доступ до особливих можливостей та візуалу.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">DELUXE</div>
-            <span class="chip">Преміум</span>
-          </div>
-          <div class="card-body">
-            Посилені бонуси, більше вибору в меню, ще більше ефектів та комфорту під час гри.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">CRYSTAL</div>
-            <span class="chip">Еліта</span>
-          </div>
-          <div class="card-body">
-            Холодний, як лід, але кривавий в бою. Унікальні фішки, які бачать тільки обрані.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">БОГ</div>
-            <span class="chip">Паніка для зомбі</span>
-          </div>
-          <div class="card-body">
-            Максимальний вплив на раунд, жорсткі бонуси та повага у чаті. Тут уже не ти боїшся темряви — темрява боїться тебе.
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">КОЛДУН</div>
-            <span class="chip chip-legendary">Легендарний статус</span>
-          </div>
-          <div class="card-body">
-            Темний маг сервера. Ексклюзивні можливості, FX та доступ до найжорсткіших фішок, які не отримати іншим шляхом.
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- CONTACTS -->
-    <section id="contacts">
-      <h2 class="section-title"><span>Контакти</span> та соцмережі</h2>
-      <p class="section-text">
-        Якщо хочеш придбати привілею, запропонувати ідею або просто влитись у рух —
-        переходь у наш Telegram.
-      </p>
-
-      <div class="hero-actions" style="margin-top: 14px;">
-        <a class="btn btn-ghost" href="https://t.me/slvexrzombie" target="_blank">
-          Відкрити Telegram канал
-        </a>
-      </div>
-    </section>
-
-    <footer>
-      <div>© <span id="year"></span> SLVEXR | Музикальні Зомбі | UA</div>
-      <div class="footer-links">
-        <a href="#about">Про сервер</a>
-        <a href="#privileges">Привілеї</a>
-        <a href="https://t.me/slvexrzombie" target="_blank">Telegram</a>
-      </div>
-    </footer>
-  </div>
+  <div id="result">Очікую на запит…</div>
 
   <script>
-    // Поточний рік у футері
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // ==============================
-    //   СТАТУС СЕРВЕРА З CSHOST API
-    // ==============================
-
-    // Пряме посилання на API cshost
+    // Твоє API
     const API_DIRECT =
       "https://cshost.com.ua/api?action=getServersStatus&serverid=36689&token=d91c54931a7fe9106d804201f63c9847";
 
-    // Публічний проксі для обходу CORS
     const API_PROXY =
       "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_DIRECT);
 
-    async function loadServerStatus() {
-      const pill = document.getElementById("server-pill");
-      const statusText = document.getElementById("server-status-text");
-      const playersText = document.getElementById("server-players");
+    const result = document.getElementById("result");
 
+    function log(msg) {
+      result.textContent += "\n" + msg;
+    }
+
+    async function test(url, label) {
+      result.textContent = "Тест: " + label + "\nURL: " + url + "\n\nЗапит відправлено...\n";
       try {
-        const res = await fetch(API_PROXY, { cache: "no-cache" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
+        const res = await fetch(url, { cache: "no-cache" });
+        log("HTTP статус: " + res.status + " " + res.statusText);
 
-        const data = await res.json();
+        const text = await res.text();
+        log("\nСира відповідь:\n" + text);
 
-        if (data.status !== "OK") {
-          throw new Error(data.message || "API error");
+        // Пробуємо розпарсити як JSON
+        try {
+          const json = JSON.parse(text);
+          log("\n\nJSON розпарсено успішно:\n" + JSON.stringify(json, null, 2));
+        } catch (e) {
+          log("\n\n❌ Не вдалося розпарсити JSON: " + e.message);
         }
-
-        // Кількість гравців
-        const online = Array.isArray(data.users) ? data.users.length : 0;
-        // Максимум слотів
-        const maxSlots = parseInt(data.server_maxslots, 10) || 32;
-
-        statusText.textContent = "ONLINE";
-        playersText.textContent = online + " / " + maxSlots + " гравців";
-
-        pill.style.background = "rgba(0, 200, 120, 0.16)";
-        pill.style.borderColor = "rgba(0, 200, 120, 0.7)";
-        pill.style.color = "#9fffd3";
       } catch (err) {
-        statusText.textContent = "ERROR";
-        playersText.textContent = "немає звʼязку";
-
-        pill.style.background = "rgba(255, 23, 68, 0.16)";
-        pill.style.borderColor = "rgba(255, 23, 68, 0.7)";
-        pill.style.color = "#ffb3c1";
+        log("\n❌ Помилка fetch:\n" + err.name + ": " + err.message);
+        log("\nПеревір консоль браузера (F12 → Console) на наявність CORS помилок.");
       }
     }
 
-    // стартовий виклик + оновлення кожні 30 секунд
-    loadServerStatus();
-    setInterval(loadServerStatus, 30000);
+    document.getElementById("btn-direct").addEventListener("click", () => {
+      test(API_DIRECT, "ПРЯМИЙ ЗАПИТ");
+    });
+
+    document.getElementById("btn-proxy").addEventListener("click", () => {
+      test(API_PROXY, "ЗАПИТ ЧЕРЕЗ ПРОКСІ");
+    });
   </script>
 </body>
 </html>
