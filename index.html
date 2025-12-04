@@ -239,13 +239,14 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .hero-online {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
+      gap: 10px;
       padding: 8px 10px;
       border-radius: 10px;
       background: rgba(5, 1, 15, 0.9);
@@ -254,18 +255,61 @@
     }
 
     .online-main {
-      font-size: 0.9rem;
+      font-size: 0.86rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .online-main-title {
+      font-weight: 600;
+    }
+
+    .online-main-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
     }
 
     .online-pill {
       font-size: 0.78rem;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(0, 200, 120, 0.16);
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(0, 200, 120, 0.14);
       border: 1px solid rgba(0, 200, 120, 0.7);
       color: #9fffd3;
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .pill-status {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 600;
       text-align: center;
-      min-width: 110px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .pill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-label {
+      font-size: 0.72rem;
+      color: rgba(230, 255, 244, 0.8);
+    }
+
+    .pill-value {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-all;
     }
 
     .hero-side-list {
@@ -493,15 +537,19 @@
         <div class="hero-side-title">Статус сервера</div>
         <div class="hero-online">
           <div class="online-main">
-            SLVEXR | Музикальні Зомбі<br />
-            <span style="font-size: 0.76rem; color: var(--text-muted);">CS 1.6 • Zombie Mod</span>
+            <div class="online-main-title">SLVEXR | Музикальні Зомбі | UA</div>
+            <div class="online-main-sub">CS 1.6 • Zombie Mod</div>
           </div>
           <div class="online-pill" id="server-pill">
-            <span id="server-status-text">UNKNOWN</span><br />
-            <span id="server-players" style="font-size: 0.7rem;">? / 32 гравців</span><br />
-            <span id="server-map" style="font-size: 0.7rem; display:block; margin-top: 2px;">
-              Карта: —
-            </span>
+            <div class="pill-status" id="server-status-text">UNKNOWN</div>
+            <div class="pill-row">
+              <span class="pill-label">Гравці:</span>
+              <span class="pill-value" id="server-players">? / 32</span>
+            </div>
+            <div class="pill-row">
+              <span class="pill-label">Карта:</span>
+              <span class="pill-value" id="server-map">—</span>
+            </div>
           </div>
         </div>
         <ul class="hero-side-list">
@@ -684,7 +732,7 @@
     function setOffline(reason) {
       statusText.textContent = "OFFLINE";
       playersText.textContent = reason || "сервер недоступний";
-      mapText.textContent = "Карта: невідомо";
+      mapText.textContent = "—";
 
       pill.style.background = "rgba(255, 23, 68, 0.16)";
       pill.style.borderColor = "rgba(255, 23, 68, 0.7)";
@@ -693,8 +741,8 @@
 
     function setOnline(online, max, mapName) {
       statusText.textContent = "ONLINE";
-      playersText.textContent = online + " / " + max + " гравців";
-      mapText.textContent = "Карта: " + (mapName || "—");
+      playersText.textContent = online + " / " + max;
+      mapText.textContent = mapName || "—";
 
       pill.style.background = "rgba(0, 200, 120, 0.16)";
       pill.style.borderColor = "rgba(0, 200, 120, 0.7)";
@@ -703,8 +751,8 @@
 
     async function loadServerStatus() {
       statusText.textContent = "Перевірка…";
-      playersText.textContent = "чекаю відповідь…";
-      mapText.textContent = "Карта: —";
+      playersText.textContent = "…";
+      mapText.textContent = "—";
 
       try {
         const res = await fetch(API_GC, { cache: "no-cache" });
