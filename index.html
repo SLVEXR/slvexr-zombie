@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="SLVEXR | Музикальні Зомбі | UA — унікальний ZM сервер CS 1.6 з музикою, левелами, репутацією та жорсткими привілеями." />
 
-  <!-- Необовʼязково, але красиво -->
+  <!-- Шрифти -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Russo+One&display=swap" rel="stylesheet" />
@@ -265,6 +265,8 @@
       background: rgba(0, 200, 120, 0.16);
       border: 1px solid rgba(0, 200, 120, 0.7);
       color: #9fffd3;
+      text-align: right;
+      min-width: 110px;
     }
 
     .hero-side-list {
@@ -281,18 +283,19 @@
       color: var(--text-muted);
     }
 
-    .dot-purple {
+    .dot-purple,
+    .dot-red {
       width: 8px;
       height: 8px;
       border-radius: 50%;
+    }
+
+    .dot-purple {
       background: var(--accent-purple);
       box-shadow: 0 0 8px rgba(123, 44, 255, 0.9);
     }
 
     .dot-red {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
       background: var(--accent-red);
       box-shadow: 0 0 8px rgba(255, 23, 68, 0.9);
     }
@@ -477,8 +480,8 @@
         </div>
 
         <div class="hero-actions">
-          <!-- Заміни IP_ТВОГО_СЕРВЕРА на реальний -->
-          <a class="btn btn-primary" href="steam://connect/IP_ТВОГО_СЕРВЕРА:27015">
+          <!-- реальний IP сервера -->
+          <a class="btn btn-primary" href="steam://connect/91.211.118.49:27019">
             Підключитись до сервера
           </a>
 
@@ -495,9 +498,9 @@
             SLVEXR | Музикальні Зомбі<br />
             <span style="font-size: 0.76rem; color: var(--text-muted);">CS 1.6 • Zombie Mod</span>
           </div>
-          <div class="online-pill">
-            ONLINE<br />
-            <span style="font-size: 0.7rem;">? / 32 гравців</span>
+          <div class="online-pill" id="server-pill">
+            <span id="server-status-text">CHECK...</span><br />
+            <span id="players-count" style="font-size: 0.7rem;">? / ? гравців</span>
           </div>
         </div>
         <ul class="hero-side-list">
@@ -514,7 +517,7 @@
       <h2 class="section-title"><span>Про</span> сервер</h2>
       <p class="section-text">
         <strong>SLVEXR | Музикальні Зомбі | UA</strong> — це не чергова збірка з інтернету.
-        Це живий проект з кастомним кодом, власними ефектами, музику, HUDʼами, ножами, рівнями,
+        Це живий проект з кастомним кодом, власними ефектами, музикою, HUDʼами, ножами, рівнями,
         валютою та репутацією. Ми поступово перетворюємо звичайний ZM у щось середнє
         між хорор-аркадою та музичним шоу.
       </p>
@@ -652,79 +655,65 @@
       </div>
     </section>
 
-   <footer>
-  <div>© <span id="year"></span> SLVEXR | Музикальні Зомбі | UA</div>
-  <div class="footer-links">
-    <a href="#about">Про сервер</a>
-    <a href="#privileges">Привілеї</a>
-    <a href="https://t.me/slvexrzombie" target="_blank">Telegram</a>
+    <footer>
+      <div>© <span id="year"></span> SLVEXR | Музикальні Зомбі | UA</div>
+      <div class="footer-links">
+        <a href="#about">Про сервер</a>
+        <a href="#privileges">Привілеї</a>
+        <a href="https://t.me/slvexrzombie" target="_blank">Telegram</a>
+      </div>
+    </footer>
   </div>
-</footer>
-</div>
 
-<script>
-  // Поточний рік у футері
-  document.getElementById("year").textContent = new Date().getFullYear();
+  <script>
+    // Поточний рік у футері
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-  // ===== Живий онлайн через CSHost API =====
+    // Оновлення статусу сервера та онлайну
+    async function updateServerStatus() {
+      const statusTextEl = document.getElementById("server-status-text");
+      const playersEl = document.getElementById("players-count");
+      const pillEl = document.getElementById("server-pill");
 
-  // ⚠️ СЮДИ ВСТАВ СВІЙ РЕАЛЬНИЙ ТОКЕН З CSHOST
-  // Токен краще потім НЕ світити в публічному репозиторії.
-  const API_URL = "https://cshost.com.ua/api?action=getServersStatus&serverid=36689&token=d91c54931a7fe9106d804201f63c9847";
+      try {
+        const res = await fetch("https://cshost.com.ua/api?action=getServersStatus&serverid=36689&token=d91c54931a7fe9106d804201f63c9847");
+        const data = await res.json();
 
-  async function updateServerStatus() {
-    const statusText = document.getElementById("server-status-text");
-    const playersSpan = document.getElementById("server-players");
-    const maxSpan = document.getElementById("server-maxplayers");
-    const pill = document.getElementById("server-pill");
+        if (data.status === "OK") {
+          const isOn = data.server_status && data.server_status.toLowerCase().includes("включ");
+          const onlinePlayers = Array.isArray(data.users) ? data.users.length : (Number(data.server_maxonline) || 0);
+          const maxSlots = Number(data.server_maxslots) || 32;
 
-    if (!statusText || !playersSpan || !maxSpan || !pill) return;
+          statusTextEl.textContent = isOn ? "ONLINE" : "OFFLINE";
+          playersEl.textContent = `${onlinePlayers} / ${maxSlots} гравців`;
 
-    try {
-      statusText.textContent = "CHECK...";
-
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("HTTP " + res.status);
-
-      const data = await res.json();
-      console.log("CSHost API:", data);
-
-      // Підбираємо поля з різними можливими назвами
-      const players = data.players ?? data.online ?? 0;
-      const maxplayers = data.maxplayers ?? data.slots ?? 32;
-      const statusRaw = (data.status ?? data.state ?? "").toString().toLowerCase();
-
-      playersSpan.textContent = players;
-      maxSpan.textContent = maxplayers;
-
-      // Визначаємо online / offline
-      const isOnline =
-        statusRaw === "online" ||
-        statusRaw === "on" ||
-        statusRaw === "1" ||
-        statusRaw === "true";
-
-      if (isOnline) {
-        statusText.textContent = "ONLINE";
-        pill.style.background = "rgba(0, 200, 120, 0.16)";
-        pill.style.borderColor = "rgba(0, 200, 120, 0.7)";
-        pill.style.color = "#9fffd3";
-      } else {
-        statusText.textContent = "OFFLINE";
-        pill.style.background = "rgba(80, 0, 20, 0.4)";
-        pill.style.borderColor = "rgba(255, 23, 68, 0.7)";
-        pill.style.color = "#ffb3c0";
+          if (isOn) {
+            pillEl.style.background = "rgba(0, 200, 120, 0.16)";
+            pillEl.style.borderColor = "rgba(0, 200, 120, 0.7)";
+            pillEl.style.color = "#9fffd3";
+          } else {
+            pillEl.style.background = "rgba(120, 0, 0, 0.25)";
+            pillEl.style.borderColor = "rgba(255, 23, 68, 0.7)";
+            pillEl.style.color = "#ff8a80";
+          }
+        } else {
+          statusTextEl.textContent = "ERROR";
+          playersEl.textContent = "API помилка";
+          pillEl.style.background = "rgba(120, 0, 0, 0.25)";
+          pillEl.style.borderColor = "rgba(255, 23, 68, 0.7)";
+          pillEl.style.color = "#ff8a80";
+        }
+      } catch (e) {
+        statusTextEl.textContent = "ERROR";
+        playersEl.textContent = "немає звʼязку";
+        pillEl.style.background = "rgba(120, 0, 0, 0.25)";
+        pillEl.style.borderColor = "rgba(255, 23, 68, 0.7)";
+        pillEl.style.color = "#ff8a80";
       }
-    } catch (err) {
-      console.error("Помилка CSHost API:", err);
-      statusText.textContent = "UNKNOWN";
     }
-  }
 
-  // Перший запит одразу
-  updateServerStatus();
-  // Далі оновлюємо кожні 30 секунд
-  setInterval(updateServerStatus, 30000);
-</script>
+    updateServerStatus();
+    setInterval(updateServerStatus, 15000);
+  </script>
 </body>
 </html>
