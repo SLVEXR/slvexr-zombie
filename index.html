@@ -695,7 +695,7 @@
           throw new Error(data.message || "API error");
         }
 
-        // К-сть гравців
+        // Кількість гравців
         const online = Array.isArray(data.users) ? data.users.length : 0;
         // Максимум слотів
         const maxSlots = parseInt(data.server_maxslots, 10) || 32;
@@ -716,7 +716,9 @@
       }
     }
 
+    // стартовий виклик + оновлення кожні 30 секунд
     loadServerStatus();
+    setInterval(loadServerStatus, 30000);
   </script>
 </body>
 </html>
