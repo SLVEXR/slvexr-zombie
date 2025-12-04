@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <title>Тест CSHOST API</title>
+  <title>SLVEXR | Перевірка API онлайна</title>
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -10,78 +10,254 @@
       color: #f5f5f5;
       padding: 20px;
     }
-    button {
-      padding: 8px 14px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
+    h1 {
       margin-bottom: 12px;
     }
-    #result {
-      white-space: pre-wrap;
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
       background: #0b0715;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 14px;
       font-size: 0.9rem;
-      max-height: 70vh;
+    }
+    .ok {
+      color: #9fffd3;
+    }
+    .bad {
+      color: #ff8fa3;
+    }
+    .warn {
+      color: #ffd166;
+    }
+    pre {
+      background: #05030a;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 0.8rem;
+      max-height: 180px;
       overflow: auto;
+      white-space: pre-wrap;
+    }
+    .label {
+      font-weight: 600;
+    }
+    #summary {
+      background: #12091f;
+      border-radius: 10px;
+      border: 1px solid rgba(123,44,255,0.6);
+      padding: 14px 16px;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
-  <h1>Тест CSHOST API</h1>
-  <p>Натисни кнопку, щоб зробити запит до API і подивитися, що реально прилітає.</p>
+  <h1>SLVEXR | Перевірка API статусу сервера</h1>
+  <p>Сторінка сама зробить 3 запити і покаже, що працює, а що ні, та дасть рекомендацію в кінці.</p>
 
-  <button id="btn-direct">Тест: прямий запит (може дати CORS)</button>
-  <button id="btn-proxy">Тест: через проксі allorigins</button>
+  <div class="cards">
+    <div class="card" id="card-cshost-direct">
+      <h2>1) CSHOST API — прямий запит з браузера</h2>
+      <p><span class="label">Статус тесту:</span> <span id="st-cshost-direct">Очікую…</span></p>
+      <p><span class="label">HTTP:</span> <span id="http-cshost-direct">—</span></p>
+      <p><span class="label">JSON:</span> <span id="json-cshost-direct">—</span></p>
+      <p><span class="label">Фрагмент відповіді:</span></p>
+      <pre id="raw-cshost-direct"></pre>
+    </div>
 
-  <div id="result">Очікую на запит…</div>
+    <div class="card" id="card-cshost-proxy">
+      <h2>2) CSHOST API — через проксі allorigins</h2>
+      <p><span class="label">Статус тесту:</span> <span id="st-cshost-proxy">Очікую…</span></p>
+      <p><span class="label">HTTP:</span> <span id="http-cshost-proxy">—</span></p>
+      <p><span class="label">JSON:</span> <span id="json-cshost-proxy">—</span></p>
+      <p><span class="label">Фрагмент відповіді:</span></p>
+      <pre id="raw-cshost-proxy"></pre>
+    </div>
+
+    <div class="card" id="card-gamecms">
+      <h2>3) GameCMS API — статус по IP:PORT</h2>
+      <p><span class="label">Статус тесту:</span> <span id="st-gamecms">Очікую…</span></p>
+      <p><span class="label">HTTP:</span> <span id="http-gamecms">—</span></p>
+      <p><span class="label">JSON:</span> <span id="json-gamecms">—</span></p>
+      <p><span class="label">Фрагмент відповіді:</span></p>
+      <pre id="raw-gamecms"></pre>
+    </div>
+  </div>
+
+  <div id="summary">
+    <strong>Рекомендація:</strong> чекаю результатів тестів…
+  </div>
 
   <script>
-    // Твоє API
-    const API_DIRECT =
+    // --- URLs для тестов ---
+    const CSHOST_DIRECT =
       "https://cshost.com.ua/api?action=getServersStatus&serverid=36689&token=d91c54931a7fe9106d804201f63c9847";
 
-    const API_PROXY =
-      "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_DIRECT);
+    const CSHOST_PROXY =
+      "https://api.allorigins.win/raw?url=" + encodeURIComponent(CSHOST_DIRECT);
 
-    const result = document.getElementById("result");
+    // GameCMS: статус Source-сервера (CS 1.6) по IP:PORT
+    const GAMECMS =
+      "https://api.gamecms.org/game/source/91.211.118.49:27019";
 
-    function log(msg) {
-      result.textContent += "\n" + msg;
+    const results = {
+      cshostDirect: { okJson: false, vpnBlock: false, networkError: false },
+      cshostProxy:  { okJson: false, vpnBlock: false, networkError: false },
+      gamecms:      { okJson: false, networkError: false }
+    };
+
+    function shortText(text, max = 260) {
+      if (!text) return "(порожня відповідь)";
+      text = text.trim();
+      return text.length > max ? text.slice(0, max) + " …" : text;
     }
 
-    async function test(url, label) {
-      result.textContent = "Тест: " + label + "\nURL: " + url + "\n\nЗапит відправлено...\n";
+    function setEl(id, text, className) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = className || "";
+    }
+
+    async function runTest(name, url, cfg) {
+      const stId   = "st-"   + name;
+      const httpId = "http-" + name;
+      const jsonId = "json-" + name;
+      const rawId  = "raw-"  + name;
+
+      setEl(stId, "Запит відправлено…", "warn");
+      setEl(httpId, "—");
+      setEl(jsonId, "—");
+      setEl(rawId, "");
+
       try {
         const res = await fetch(url, { cache: "no-cache" });
-        log("HTTP статус: " + res.status + " " + res.statusText);
+        setEl(httpId, res.status + " " + res.statusText);
 
         const text = await res.text();
-        log("\nСира відповідь:\n" + text);
+        setEl(rawId, shortText(text));
 
-        // Пробуємо розпарсити як JSON
+        // Определяем, это VPN-страница CSHOST или нормальный JSON
+        if (cfg.kind === "cshost") {
+          const low = text.toLowerCase();
+          const isVpn =
+            low.includes("vpn") ||
+            low.includes("proxy") ||
+            low.includes("отключите vpn") ||
+            low.includes("ip:") && low.includes("информация о вас");
+
+          if (isVpn) {
+            setEl(stId, "CSHOST блокує запит (VPN/Proxy сторінка)", "bad");
+            setEl(jsonId, "❌ Це не JSON, а HTML з перевіркою VPN", "bad");
+            results[cfg.resultKey].vpnBlock = true;
+            return;
+          }
+        }
+
+        // Пробуем распарсить как JSON
         try {
           const json = JSON.parse(text);
-          log("\n\nJSON розпарсено успішно:\n" + JSON.stringify(json, null, 2));
+
+          if (cfg.kind === "cshost") {
+            if (json && json.status === "OK") {
+              setEl(stId, "JSON отримано, CSHOST API працює з браузера", "ok");
+              setEl(jsonId, "✅ JSON OK (status=OK)", "ok");
+              results[cfg.resultKey].okJson = true;
+            } else {
+              setEl(stId, "Відповідь є, але формат не той", "bad");
+              setEl(jsonId, "❌ JSON є, але немає поля status='OK'", "bad");
+            }
+          } else if (cfg.kind === "gamecms") {
+            if (json && (json.status === "online" || json.status === "offline")) {
+              setEl(stId, "JSON отримано, GameCMS API працює", "ok");
+              setEl(jsonId, "✅ JSON OK (status=" + json.status + ")", "ok");
+              results[cfg.resultKey].okJson = true;
+            } else {
+              setEl(stId, "JSON є, але структура незвична", "warn");
+              setEl(jsonId, "⚠️ JSON розпарсено, але немає стандартного поля status", "warn");
+            }
+          }
         } catch (e) {
-          log("\n\n❌ Не вдалося розпарсити JSON: " + e.message);
+          setEl(jsonId, "❌ Не вдалося розпарсити JSON: " + e.message, "bad");
+
+          if (cfg.kind === "gamecms") {
+            // Если вдруг GameCMS тоже вернул HTML
+            results[cfg.resultKey].okJson = false;
+          }
         }
       } catch (err) {
-        log("\n❌ Помилка fetch:\n" + err.name + ": " + err.message);
-        log("\nПеревір консоль браузера (F12 → Console) на наявність CORS помилок.");
+        setEl(stId, "Помилка мережі / CORS: " + err.message, "bad");
+        setEl(rawId, "");
+        results[cfg.resultKey].networkError = true;
       }
     }
 
-    document.getElementById("btn-direct").addEventListener("click", () => {
-      test(API_DIRECT, "ПРЯМИЙ ЗАПИТ");
-    });
+    function buildRecommendation() {
+      const summary = document.getElementById("summary");
+      const cd = results.cshostDirect;
+      const cp = results.cshostProxy;
+      const gm = results.gamecms;
 
-    document.getElementById("btn-proxy").addEventListener("click", () => {
-      test(API_PROXY, "ЗАПИТ ЧЕРЕЗ ПРОКСІ");
-    });
+      let html = "<strong>Рекомендація:</strong><br>";
+
+      const cshostBlocked =
+        (cd.vpnBlock || cp.vpnBlock) && !cd.okJson && !cp.okJson;
+
+      if (cshostBlocked && gm.okJson) {
+        html += "• <span class='bad'>CSHOST API блокує браузерні / проксі-запити (анти-VPN / Proxy захист).</span><br>";
+        html += "• <span class='ok'>GameCMS API повертає нормальний JSON, його можна спокійно використовувати напряму на сайті.</span><br><br>";
+        html += "👉 Для відображення онлайна на сайті використовуй <code>https://api.gamecms.org/game/source/91.211.118.49:27019</code> і парсь поля <code>status</code>, <code>players.online</code>, <code>players.max</code>.";
+      } else if (cshostBlocked && !gm.okJson) {
+        html += "• <span class='bad'>CSHOST API блокує запити з сайту (анти-VPN / Proxy, HTML замість JSON).</span><br>";
+        html += "• GameCMS теж не повернув коректний JSON (може бути тимчасова проблема або CORS).<br><br>";
+        html += "👉 В такому випадку для красивого онлайна потрібен свій backend (невеликий скрипт на сервері/VPS), який буде опитувати ігровий сервер і віддавати JSON сайту.";
+      } else if (!cshostBlocked && (cd.okJson || cp.okJson)) {
+        html += "• <span class='ok'>CSHOST API повернув коректний JSON — теоретично його можна використовувати.</span><br>";
+        if (gm.okJson) {
+          html += "• <span class='ok'>GameCMS API також працює. Можеш вибрати будь-який, але GameCMS простіший і без токенів.</span><br>";
+        }
+        html += "<br>👉 Рекомендую все одно зав'язатися на GameCMS для фронтенду, а CSHOST лишити для адмінки / внутрішніх інструментів.";
+      } else if (gm.okJson) {
+        html += "• CSHOST не дає нормальної відповіді, зате <span class='ok'>GameCMS API працює стабільно.</span><br><br>";
+        html += "👉 На сайт — тільки GameCMS.";
+      } else {
+        html += "<span class='bad'>Жоден з API не дав нормальної JSON-відповіді. Це або тимчасові проблеми мережі, або жорсткі обмеження по CORS/VPN.</span><br><br>";
+        html += "👉 Для надійного онлайна потрібен свій backend (маленький сервіс, який опитує сервер і віддає JSON сайту).";
+      }
+
+      summary.innerHTML = html;
+    }
+
+    async function runAllTests() {
+      await runTest("cshost-direct", CSHOST_DIRECT, {
+        kind: "cshost",
+        resultKey: "cshostDirect"
+      });
+
+      await runTest("cshost-proxy", CSHOST_PROXY, {
+        kind: "cshost",
+        resultKey: "cshostProxy"
+      });
+
+      await runTest("gamecms", GAMECMS, {
+        kind: "gamecms",
+        resultKey: "gamecms"
+      });
+
+      buildRecommendation();
+    }
+
+    runAllTests();
   </script>
 </body>
 </html>
